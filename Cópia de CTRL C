@@ -1,0 +1,39 @@
+import pyperclip
+import time
+import ipywidgets as widgets
+from IPython.display import display
+
+# Variáveis globais
+historico_textos = []  # Lista para armazenar o histórico de textos copiados
+monitorando = False  # Estado inicial (não está monitorando)
+
+# Função para monitorar a área de transferência
+def monitorar_clipboard():
+    global monitorando, historico_textos
+    while monitorando:
+        texto_atual = pyperclip.paste()  # Pega o texto atual da área de transferência
+        if texto_atual != historico_textos[-1] if historico_textos else None:  # Se o texto mudou
+            historico_textos.append(texto_atual)  # Adiciona o novo texto ao histórico
+            print(f"Texto copiado: {texto_atual}")
+        time.sleep(1)  # Espera 1 segundo antes de verificar novamente
+
+# Função para iniciar a captura
+def iniciar_monitoramento(change):
+    global monitorando
+    monitorando = True
+    while monitorando:
+        monitorar_clipboard()
+
+# Função para parar a captura
+def parar_monitoramento(change):
+    global monitorando
+    monitorando = False
+
+# Botões para controlar o monitoramento
+botao_iniciar = widgets.Button(description="Iniciar Monitoramento")
+botao_parar = widgets.Button(description="Parar Monitoramento")
+
+botao_iniciar.on_click(iniciar_monitoramento)
+botao_parar.on_click(parar_monitoramento)
+
+display(botao_iniciar, botao_parar)
